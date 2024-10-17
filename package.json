@@ -9,6 +9,9 @@
   "author": "Aswin Jojo",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.1"
+    "aws-sdk": "^2.1691.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "serverless-http": "^3.2.0"
   }
 }
