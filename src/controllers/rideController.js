@@ -1,30 +1,5 @@
-
-const dynamoDB = require('./../db');
 const { ok, failure } = require("./../utils/responseHelper");
-
-// Function to fetch rides from DynamoDB
-const fetchRides = async (address) => {
-
-  const rideInfo = {
-    TableName: 'Rides', //DB table
-    FilterExpression: 'end_city = :endcityValue',
-    ExpressionAttributeValues:{
-      ':endcityValue': address
-    },
-    ProjectionExpression: 'driver, end_city, time_available, price'
-  };
-
-  try {
-    const allRides = await dynamoDB.scan(rideInfo).promise(); // Await the scan operation
-    console.log(allRides);
-
-    // return all rows
-    return allRides.Items;
-  } catch (error) {
-    console.error('Error fetching items:', error);
-    throw error; 
-  }
-};
+const rideService = require('./../Services/rideService');
 
 // Controller function
 const rideController = {
@@ -32,11 +7,12 @@ const rideController = {
     try {
       // Get the address from query parameters (assume encoded)
       //let address = decodeURIComponent(req.query.address); 
-      let address = req.query.address; 
-      let rides = await fetchRides(address); 
-
+      let address = req.query.address.toLowerCase(); 
+      let available_rides = await rideService.fetchOpenRides(address); 
+      let all_rides = await rideService.fetchAllRides(address); 
+      
       // Create the response data
-      let data = { rides }; 
+      let data = {available_rides, all_rides}; 
 
       // Send success response
       return ok(res, { error: false, data: data });
@@ -44,6 +20,19 @@ const rideController = {
       console.log("Error:", err);
       // Send failure response
       return failure(res, { error: true, message: err.message });
+    }
+  },
+
+  updateRides: async function(req, res){
+    try{
+      let rid = Number(req.query.rid);
+      let uid = String(req.query.uid);
+      await rideService.updateRide(rid, uid);
+      //return succ ( change the parameter name) 
+      data = "Ride Info Updated";
+      return ok(res, { error: false, data: data });
+    } catch (err){
+      return failure(res, {error: true, message: err.message})
     }
   },
 };
