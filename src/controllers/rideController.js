@@ -1,5 +1,5 @@
 const { ok, failure } = require("./../utils/responseHelper");
-const rideService = require('./../Services/rideService');
+const rideService = require('../services/rideService');
 
 // Controller function
 const rideController = {
